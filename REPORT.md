@@ -18,6 +18,36 @@
 **Задание 6 (чужой состав заказа): список товаров получали по клиент айди. заменил ClientId на Id** 
 Задание 7: var itemTotal = items.Sum(i => i.Price * i.Quantity);
         TotalText.Text = $"Сумма заказа: {itemTotal} ₽";
-**Задание 8 (новый товар):**
+**Задание 8 (новый товар):**  не было проверки остатка, был лишняя строка, которая указывала остаток 0, в конце не было добавлено сохранение. добавил проверку:   if (!int.TryParse(StockBox.Text, out int stock))
+        {
+            ShowMessage("Остаток должен быть числом");
+            return;
+стер лишнюю строку, в конце добавил await LoadProducts();
+задание 9:  private async void SetStatus_Click(object? sender, RoutedEventArgs e)
+    {
+        var order = OrdersGrid.SelectedItem as Order;
+        if (order == null)
+        {
+            ShowMessage("Выбери заказ");
+            return;
+        }
 
-**Что было самым сложным:**
+        var status = StatusBox.SelectedItem as string;
+        if (status == null)
+        {
+            ShowMessage("Выбери статус");
+            return;
+        }
+
+        var error = await Api.SetStatus(order.Id, status);
+        if (error != null)
+        {
+            ShowMessage(error);
+            return;
+        }
+
+        ShowMessage($"Статус заказа {order.Id} изменён на «{status}»");
+
+        await LoadOrders();
+    }
+**Что было самым сложным:** задание 9, сделал по примеру 8.

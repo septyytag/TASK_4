@@ -158,9 +158,13 @@ public partial class MainWindow : Window
             ShowMessage("Цена должна быть числом");
             return;
         }
-
+         if (!int.TryParse(StockBox.Text, out int stock))
+        {
+            ShowMessage("Остаток должен быть числом");
+            return;
+        }
         // Задание 8. По аналогии с PriceBox выше, сделай проверку на число и запиши результат в stock. StockBox
-        int stock = 0;
+       
 
         var product = new Product
         {
@@ -185,11 +189,35 @@ public partial class MainWindow : Window
 
         // Задание 8. 
         // Подсказка: Добавь перезагрузку таблицы с помощью вызова LoadProducts();
+        await LoadProducts();
     }
 
     // Задание 9. Кнопка «Сменить статус». Напиши сам — по образцу задания 8
     private async void SetStatus_Click(object? sender, RoutedEventArgs e)
     {
+        var order = OrdersGrid.SelectedItem as Order;
+        if (order == null)
+        {
+            ShowMessage("Выбери заказ");
+            return;
+        }
 
+        var status = StatusBox.SelectedItem as string;
+        if (status == null)
+        {
+            ShowMessage("Выбери статус");
+            return;
+        }
+
+        var error = await Api.SetStatus(order.Id, status);
+        if (error != null)
+        {
+            ShowMessage(error);
+            return;
+        }
+
+        ShowMessage($"Статус заказа {order.Id} изменён на «{status}»");
+
+        await LoadOrders();
     }
 }
